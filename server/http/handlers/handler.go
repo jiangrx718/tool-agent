@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"tool-agent/server/http/handlers/model"
 	"tool-agent/server/http/handlers/picture_book"
 	"tool-agent/utils"
 
@@ -23,9 +22,6 @@ func NewHandler(router *gin.Engine) utils.HttpServerHandler {
 // RegisterRoutes 注册所有路由
 func (h *Handler) RegisterRoutes() {
 	g := h.router.Group("/api")
-
-	// 模型相关接口
-	model.NewModelHandler(h.router).RegisterRoutes(g)
 
 	// 绘本相关接口
 	picture_book.NewPictureBookHandler(h.router).RegisterRoutes(g)
