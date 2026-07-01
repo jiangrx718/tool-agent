@@ -1,0 +1,9 @@
+logs/api.log
+logs/*
+logs/
+temp/
+.idea/
+tmp/runner-build
+tmp/*
+tmp/
+.DS_Store

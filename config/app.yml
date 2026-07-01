@@ -1,0 +1,10 @@
+debug: true
+app: tool-agent
+server:
+  addr: ":8080"
+log:
+  level: debug
+# 数据库配置
+tools:
+  dialect: mysql
+  dsn: root:123456@tcp(127.0.0.1:3306)/tools?charset=utf8mb4&parseTime=True&loc=Local
