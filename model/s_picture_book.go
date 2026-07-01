@@ -1,6 +1,5 @@
 package model
 
-// 绘本表
 type SPictureBook struct {
 	BaseModelFieldId
 	BookId     string `gorm:"column:book_id;type:char(36);comment:绘本id;NOT NULL" json:"book_id"`
