@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormlogger "gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
@@ -29,11 +29,11 @@ func InitDB() error {
 		return fmt.Errorf("unsupported database dialect: %s", dialect)
 	}
 
-	gormLogger := logger.Default
+	gormLogger := gormlogger.Default
 	if Debug() {
-		gormLogger = gormLogger.LogMode(logger.Info)
+		gormLogger = gormLogger.LogMode(gormlogger.Info)
 	} else {
-		gormLogger = gormLogger.LogMode(logger.Silent)
+		gormLogger = gormLogger.LogMode(gormlogger.Silent)
 	}
 
 	instance, err := gorm.Open(dialector, &gorm.Config{

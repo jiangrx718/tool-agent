@@ -18,6 +18,7 @@ func main() {
 	app.Version = Version
 	app.Action = commands.Serve
 	app.Before = initConfig
+	app.After = flush
 	app.Commands = commands.AllCommands()
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
@@ -40,13 +41,17 @@ func initConfig(*cli.Context) error {
 		return err
 	}
 
-	if err := utils.InitLogger(); err != nil {
-		return err
-	}
+	utils.InitFromViper()
 
 	if err := utils.InitDB(); err != nil {
 		return err
 	}
 
+	return nil
+}
+
+// flush 退出前刷新日志缓冲
+func flush(*cli.Context) error {
+	utils.Flush()
 	return nil
 }

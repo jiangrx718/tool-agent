@@ -3,14 +3,17 @@ module tool-agent
 go 1.23.6
 
 require (
+	github.com/getsentry/sentry-go v0.27.0
 	github.com/gin-gonic/gin v1.10.1
 	github.com/google/uuid v1.6.0
 	github.com/spf13/viper v1.19.0
 	github.com/urfave/cli/v2 v2.27.2
 	go.uber.org/zap v1.27.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gen v0.3.28
 	gorm.io/gorm v1.25.12
+	gorm.io/plugin/dbresolver v1.5.3
 )
 
 require (
@@ -65,5 +68,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/datatypes v1.2.4 // indirect
 	gorm.io/hints v1.1.0 // indirect
-	gorm.io/plugin/dbresolver v1.5.3 // indirect
 )

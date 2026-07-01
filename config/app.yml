@@ -3,7 +3,12 @@ app: tool-agent
 server:
   addr: ":8080"
 log:
+  development: true
   level: debug
+  disable_sentry: true
+  outputs:
+    - stdout
+    - ./logs/tool-agent.log
 # 数据库配置
 tools:
   dialect: mysql
