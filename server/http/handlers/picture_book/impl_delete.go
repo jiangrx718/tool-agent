@@ -15,15 +15,16 @@ type DeleteReq struct {
 // Delete 删除绘本接口
 func (h *PictureBookHandler) Delete(ctx *gin.Context) {
 	var reqBody DeleteReq
+	var logger = utils.SugarContext(ctx)
 	if err := ctx.Bind(&reqBody); err != nil {
-		utils.SugarContext(ctx).Infow("Handler PictureBook Delete ctx.Bind err", "error", err)
+		logger.Infow("Handler PictureBook Delete ctx.Bind err", "error", err)
 		response.ParameterError(ctx)
 		return
 	}
 
 	result, err := h.service.Delete(ctx, reqBody.BookId)
 	if err != nil {
-		utils.SugarContext(ctx).Errorw("Handler PictureBook Delete service.Delete error", "error", err)
+		logger.Errorw("Handler PictureBook Delete service.Delete error", "error", err)
 		response.InternalError(ctx)
 		return
 	}

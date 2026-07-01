@@ -20,15 +20,16 @@ type CreateReq struct {
 // Create 创建绘本接口
 func (h *PictureBookHandler) Create(ctx *gin.Context) {
 	var reqBody CreateReq
+	var logger = utils.SugarContext(ctx)
 	if err := ctx.Bind(&reqBody); err != nil {
-		utils.SugarContext(ctx).Infow("Handler PictureBook Create ctx.Bind err", "error", err)
+		logger.Infow("Handler PictureBook Create ctx.Bind err", "error", err)
 		response.ParameterError(ctx)
 		return
 	}
 
 	result, err := h.service.Create(ctx, reqBody.Title, reqBody.Icon, reqBody.CategoryId, reqBody.Type, reqBody.Status, reqBody.Position)
 	if err != nil {
-		utils.SugarContext(ctx).Errorw("Handler PictureBook Create service.Create error", "error", err)
+		logger.Errorw("Handler PictureBook Create service.Create error", "error", err)
 		response.InternalError(ctx)
 		return
 	}

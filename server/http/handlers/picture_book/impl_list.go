@@ -20,8 +20,9 @@ type ListQuery struct {
 // List 绘本列表接口
 func (h *PictureBookHandler) List(ctx *gin.Context) {
 	var query ListQuery
+	var logger = utils.SugarContext(ctx)
 	if err := ctx.ShouldBindQuery(&query); err != nil {
-		utils.SugarContext(ctx).Infow("Handler PictureBook List ctx.ShouldBindQuery err", "error", err)
+		logger.Infow("Handler PictureBook List ctx.ShouldBindQuery err", "error", err)
 		response.ParameterError(ctx)
 		return
 	}
@@ -34,7 +35,7 @@ func (h *PictureBookHandler) List(ctx *gin.Context) {
 
 	result, err := h.service.List(ctx, query.Title, query.Type, query.Status, offset, limit)
 	if err != nil {
-		utils.SugarContext(ctx).Errorw("Handler PictureBook List service.List error", "error", err)
+		logger.Errorw("Handler PictureBook List service.List error", "error", err)
 		response.InternalError(ctx)
 		return
 	}
