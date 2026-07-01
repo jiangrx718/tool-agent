@@ -35,10 +35,10 @@ func (h *PictureBookHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	if result.Code != 0 {
-		response.Failed(ctx, result.Code, result.Msg, result.Data)
+	if result.GetCode() != 0 {
+		response.Failed(ctx, result.GetCode(), result.GetMessage(), result.GetData())
 		return
 	}
 
-	response.Successful(ctx, result.Data)
+	response.Successful(ctx, result.GetData())
 }
