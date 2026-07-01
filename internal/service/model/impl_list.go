@@ -60,9 +60,6 @@ func (s *Service) List(ctx context.Context, keyword string, offset, limit int) (
 	items := make([]ModelItem, 0, len(list))
 	for _, m := range list {
 		items = append(items, ModelItem{
-			ID:            m.ID,
-			DataType:      m.DataType,
-			ModelID:       m.ModelID,
 			ModelName:     m.ModelName,
 			ModelPath:     m.ModelPath,
 			RunPath:       m.RunPath,
@@ -70,7 +67,6 @@ func (s *Service) List(ctx context.Context, keyword string, offset, limit int) (
 			TrainCallback: m.TrainCallback,
 			InferCallback: m.InferCallback,
 			InferPath:     m.InferPath,
-			Status:        m.Status,
 			CreatedAt:     m.CreatedAt.Format("2006-01-02 15:04:05"),
 			UpdatedAt:     m.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})

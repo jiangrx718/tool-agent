@@ -1,21 +1,25 @@
 package model
 
-// Model 模型表
+import (
+	"time"
+)
+
 type Model struct {
-	BaseModelID
-	DataType      int8   `gorm:"column:data_type;not null;default:0" json:"data_type"`
-	ModelID       string `gorm:"column:model_id;size:256;not null;default:'';index:idx_model_id" json:"model_id"`
-	ModelName     string `gorm:"column:model_name;size:256;not null;default:''" json:"model_name"`
-	ModelPath     string `gorm:"column:model_path;size:512;not null;default:''" json:"model_path"`
-	RunPath       string `gorm:"column:run_path;size:512;not null;default:''" json:"run_path"`
-	ParamsPath    string `gorm:"column:params_path;size:512;not null;default:''" json:"params_path"`
-	TrainCallback string `gorm:"column:train_callback;size:1024;not null;default:''" json:"train_callback"`
-	InferCallback string `gorm:"column:infer_callback;size:1024;not null;default:''" json:"infer_callback"`
-	InferPath     string `gorm:"column:infer_path;size:1024;not null;default:''" json:"infer_path"`
-	Status        int8   `gorm:"column:status;not null;default:1" json:"status"`
-	BaseModelTime
+	Id            uint64    `gorm:"column:id;type:bigint(20) unsigned;primary_key;AUTO_INCREMENT" json:"id"`
+	DataType      int       `gorm:"column:data_type;type:tinyint(4);default:0;NOT NULL" json:"data_type"`
+	ModelId       string    `gorm:"column:model_id;type:varchar(256);NOT NULL" json:"model_id"`
+	ModelName     string    `gorm:"column:model_name;type:varchar(256);NOT NULL" json:"model_name"`
+	ModelPath     string    `gorm:"column:model_path;type:varchar(512);NOT NULL" json:"model_path"`
+	RunPath       string    `gorm:"column:run_path;type:varchar(512);NOT NULL" json:"run_path"`
+	ParamsPath    string    `gorm:"column:params_path;type:varchar(512);NOT NULL" json:"params_path"`
+	TrainCallback string    `gorm:"column:train_callback;type:varchar(1024);NOT NULL" json:"train_callback"`
+	InferCallback string    `gorm:"column:infer_callback;type:varchar(1024);NOT NULL" json:"infer_callback"`
+	InferPath     string    `gorm:"column:infer_path;type:varchar(1024);NOT NULL" json:"infer_path"`
+	Status        int       `gorm:"column:status;type:tinyint(4);default:1;NOT NULL" json:"status"`
+	CreatedAt     time.Time `gorm:"column:created_at;type:datetime(3)" json:"created_at"`
+	UpdatedAt     time.Time `gorm:"column:updated_at;type:datetime(3)" json:"updated_at"`
 }
 
-func (Model) TableName() string {
+func (m *Model) TableName() string {
 	return "model"
 }
