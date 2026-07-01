@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"tool-agent/server/http/handlers/model"
+	"tool-agent/server/http/handlers/picture_book"
 	"tool-agent/utils"
 
 	"github.com/gin-gonic/gin"
@@ -25,4 +26,7 @@ func (h *Handler) RegisterRoutes() {
 
 	// 模型相关接口
 	model.NewModelHandler(h.router).RegisterRoutes(g)
+
+	// 绘本相关接口
+	picture_book.NewPictureBookHandler(h.router).RegisterRoutes(g)
 }
