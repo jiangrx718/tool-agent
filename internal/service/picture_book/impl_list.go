@@ -48,7 +48,7 @@ func toPictureBookItem(m *model.SPictureBook) PictureBookItem {
 }
 
 // List 查询绘本列表
-func (s *Service) List(ctx context.Context, title string, bookType int, status string, offset, limit int) (common.ServiceResult, error) {
+func (s *Service) List(ctx context.Context, title string, bookType int, status string, offset, limit int) (*common.ServiceResult, error) {
 	logger := utils.SugarContext(ctx)
 
 	if limit <= 0 {
@@ -76,7 +76,7 @@ func (s *Service) List(ctx context.Context, title string, bookType int, status s
 	list, count, err := book.Where(where...).Order(book.Id.Desc()).FindByPage(offset, limit)
 	if err != nil {
 		logger.Errorw("PictureBookService List FindByPage error", "error", err)
-		return common.ServiceResult{}, err
+		return nil, err
 	}
 
 	items := make([]PictureBookItem, 0, len(list))
@@ -84,10 +84,13 @@ func (s *Service) List(ctx context.Context, title string, bookType int, status s
 		items = append(items, toPictureBookItem(m))
 	}
 
-	return common.NewServiceResult(ListResponseData{
+	result := common.NewServiceResult()
+	result.Data = ListResponseData{
 		List:   items,
 		Count:  count,
 		Offset: offset,
 		Limit:  limit,
-	}), nil
+	}
+	result.SetMessage("操作成功")
+	return result, nil
 }

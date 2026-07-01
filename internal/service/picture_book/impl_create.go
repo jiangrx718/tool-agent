@@ -12,7 +12,7 @@ import (
 )
 
 // Create 创建绘本
-func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bookType int, status string, position int) (common.ServiceResult, error) {
+func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bookType int, status string, position int) (*common.ServiceResult, error) {
 	logger := utils.SugarContext(ctx)
 
 	if status == "" {
@@ -31,15 +31,18 @@ func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bo
 
 	if err := dao.SPictureBook.Create(&bookData); err != nil {
 		logger.Errorw("PictureBookService Create dao.Create error", "error", err)
-		return common.ServiceResult{}, err
+		return nil, err
 	}
 
 	// 查询完整记录（包含默认值和时间戳）
 	detail, err := dao.SPictureBook.Where(dao.SPictureBook.BookId.Eq(bookData.BookId)).First()
 	if err != nil {
 		logger.Errorw("PictureBookService Create First error", "error", err)
-		return common.ServiceResult{}, err
+		return nil, err
 	}
 
-	return common.NewServiceResult(toPictureBookItem(detail)), nil
+	result := common.NewServiceResult()
+	result.Data = toPictureBookItem(detail)
+	result.SetMessage("操作成功")
+	return result, nil
 }
