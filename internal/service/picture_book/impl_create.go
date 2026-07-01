@@ -12,7 +12,7 @@ import (
 )
 
 // Create 创建绘本
-func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bookType int, status string, position int) (*common.ServiceResult, error) {
+func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bookType int, status string, position int) (common.ServiceResult, error) {
 	var (
 		logger = utils.SugarContext(ctx)
 		result = common.NewServiceResult()
@@ -34,7 +34,7 @@ func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bo
 
 	if err := dao.SPictureBook.Create(&bookData); err != nil {
 		logger.Errorw("PictureBookService Create dao.Create error", "error", err)
-		return nil, err
+		return result, err
 	}
 
 	logger.Infow("PictureBookService Create 的值是",

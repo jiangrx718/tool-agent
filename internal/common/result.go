@@ -20,8 +20,8 @@ type ServiceResult struct {
 }
 
 // NewServiceResult 创建服务结果，与 chat-api 的 NewStudioServiceResult 实现方式一致
-func NewServiceResult() *ServiceResult {
-	return &ServiceResult{}
+func NewServiceResult() ServiceResult {
+	return ServiceResult{}
 }
 
 // SetCode 设置状态码

@@ -9,8 +9,11 @@ import (
 )
 
 // Update 更新绘本
-func (s *Service) Update(ctx context.Context, bookId, title, icon, categoryId string, bookType int, status string, position int) (*common.ServiceResult, error) {
-	logger := utils.SugarContext(ctx)
+func (s *Service) Update(ctx context.Context, bookId, title, icon, categoryId string, bookType int, status string, position int) (common.ServiceResult, error) {
+	var (
+		logger = utils.SugarContext(ctx)
+		result = common.NewServiceResult()
+	)
 
 	book := dao.SPictureBook
 
@@ -18,10 +21,9 @@ func (s *Service) Update(ctx context.Context, bookId, title, icon, categoryId st
 	count, err := book.Where(book.BookId.Eq(bookId)).Count()
 	if err != nil {
 		logger.Errorw("PictureBookService Update Count error", "book_id", bookId, "error", err)
-		return nil, err
+		return result, err
 	}
 	if count == 0 {
-		result := common.NewServiceResult()
 		result.SetError(&common.ServiceError{Code: 400, Message: "绘本不存在"})
 		return result, nil
 	}
@@ -37,17 +39,16 @@ func (s *Service) Update(ctx context.Context, bookId, title, icon, categoryId st
 
 	if _, err := book.Where(book.BookId.Eq(bookId)).Updates(updates); err != nil {
 		logger.Errorw("PictureBookService Update Updates error", "book_id", bookId, "error", err)
-		return nil, err
+		return result, err
 	}
 
 	// 查询更新后的记录
 	detail, err := book.Where(book.BookId.Eq(bookId)).First()
 	if err != nil {
 		logger.Errorw("PictureBookService Update First error", "book_id", bookId, "error", err)
-		return nil, err
+		return result, err
 	}
 
-	result := common.NewServiceResult()
 	result.Data = toPictureBookItem(detail)
 	result.SetMessage("操作成功")
 	return result, nil

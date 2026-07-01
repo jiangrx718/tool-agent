@@ -28,8 +28,6 @@ type PictureBookItem struct {
 	Type       int    `json:"type"`
 	Status     string `json:"status"`
 	Position   int    `json:"position"`
-	CreatedAt  string `json:"created_at"`
-	UpdatedAt  string `json:"updated_at"`
 }
 
 // toPictureBookItem 将模型转换为响应项
@@ -42,15 +40,15 @@ func toPictureBookItem(m *model.SPictureBook) PictureBookItem {
 		Type:       m.Type,
 		Status:     m.Status,
 		Position:   m.Position,
-		CreatedAt:  m.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:  m.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
 
 // List 查询绘本列表
-func (s *Service) List(ctx context.Context, title string, bookType int, status string, offset, limit int) (*common.ServiceResult, error) {
-	logger := utils.SugarContext(ctx)
-
+func (s *Service) List(ctx context.Context, title string, bookType int, status string, offset, limit int) (common.ServiceResult, error) {
+	var (
+		logger = utils.SugarContext(ctx)
+		result = common.NewServiceResult()
+	)
 	if limit <= 0 {
 		limit = 10
 	}
@@ -76,7 +74,7 @@ func (s *Service) List(ctx context.Context, title string, bookType int, status s
 	list, count, err := book.Where(where...).Order(book.Id.Desc()).FindByPage(offset, limit)
 	if err != nil {
 		logger.Errorw("PictureBookService List FindByPage error", "error", err)
-		return nil, err
+		return result, err
 	}
 
 	items := make([]PictureBookItem, 0, len(list))
@@ -84,7 +82,6 @@ func (s *Service) List(ctx context.Context, title string, bookType int, status s
 		items = append(items, toPictureBookItem(m))
 	}
 
-	result := common.NewServiceResult()
 	result.Data = ListResponseData{
 		List:   items,
 		Count:  count,

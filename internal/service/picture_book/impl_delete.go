@@ -9,8 +9,11 @@ import (
 )
 
 // Delete 删除绘本
-func (s *Service) Delete(ctx context.Context, bookId string) (*common.ServiceResult, error) {
-	logger := utils.SugarContext(ctx)
+func (s *Service) Delete(ctx context.Context, bookId string) (common.ServiceResult, error) {
+	var (
+		logger = utils.SugarContext(ctx)
+		result = common.NewServiceResult()
+	)
 
 	book := dao.SPictureBook
 
@@ -18,20 +21,18 @@ func (s *Service) Delete(ctx context.Context, bookId string) (*common.ServiceRes
 	count, err := book.Where(book.BookId.Eq(bookId)).Count()
 	if err != nil {
 		logger.Errorw("PictureBookService Delete Count error", "book_id", bookId, "error", err)
-		return nil, err
+		return result, err
 	}
 	if count == 0 {
-		result := common.NewServiceResult()
 		result.SetError(&common.ServiceError{Code: 400, Message: "绘本不存在"})
 		return result, nil
 	}
 
 	if _, err := book.Where(book.BookId.Eq(bookId)).Delete(); err != nil {
 		logger.Errorw("PictureBookService Delete error", "book_id", bookId, "error", err)
-		return nil, err
+		return result, err
 	}
 
-	result := common.NewServiceResult()
 	result.SetMessage("操作成功")
 	return result, nil
 }

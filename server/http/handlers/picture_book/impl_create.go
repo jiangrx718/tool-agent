@@ -39,5 +39,6 @@ func (h *PictureBookHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	response.Successful(ctx, result.Data)
+	ctx.JSON(200, result)
+	return
 }
