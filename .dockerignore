@@ -14,7 +14,6 @@ logs
 # 容器/部署相关，不需要进镜像
 Dockerfile
 .dockerignore
-k8s
 Makefile
 
 # OS

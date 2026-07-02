@@ -5,11 +5,14 @@ FROM golang:1.23 AS builder
 ENV GOPROXY=https://goproxy.cn,direct
 
 WORKDIR /app
-COPY . .
 
-# 下载依赖并构建（关闭 CGO）
-RUN go mod download && \
-    CGO_ENABLED=0 GOOS=linux go build \
+# 先复制依赖文件，利用 layer cache（改业务代码不会触发重新下载依赖）
+COPY go.mod go.sum ./
+RUN go mod download
+
+# 复制源码并构建（关闭 CGO）
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build \
         -ldflags="-s -w -X main.Version=docker" \
         -trimpath \
         -o tool-agent .
@@ -25,8 +28,7 @@ RUN apk add --no-cache ca-certificates tzdata \
 
 WORKDIR /app
 
-COPY --from=builder /build/tool-agent ./tool-agent
-COPY config/app.yml /app/config/app.yml
+COPY --from=builder /app/tool-agent ./tool-agent
 
 EXPOSE 8080
 
