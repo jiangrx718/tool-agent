@@ -20,5 +20,6 @@ func Serve(ctx *cli.Context) error {
 	listenCtx, stop := signal.NotifyContext(ctx.Context, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	return srv.GracefulStart(listenCtx)
+	srv.GracefulStart(listenCtx)
+	return nil
 }

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -61,18 +62,22 @@ func (s *HttpServer) RegisterHandler(funcs ...func(*gin.Engine) HttpServerHandle
 }
 
 // GracefulStart 优雅启动
-func (s *HttpServer) GracefulStart(ctx context.Context) error {
+func (s *HttpServer) GracefulStart(ctx context.Context) {
 	go func() {
+		// service connections
+		log.Printf("Server listen on %s\n", s.Addr)
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			Sugar().Errorf("Server listen error: %s", err)
+			log.Fatalf("listen: %s\n", err)
 		}
 	}()
 
 	<-ctx.Done()
-
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	return s.Shutdown(shutdownCtx)
+	if err := s.Shutdown(c); err != nil {
+		log.Printf("Server Shutdown: %s\n", err)
+	}
+	log.Println("Server exiting")
 }
 
 // RequestID 请求 ID 中间件
