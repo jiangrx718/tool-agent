@@ -7,5 +7,6 @@ func AllCommands() []*cli.Command {
 	return []*cli.Command{
 		generate,
 		dbCommand,
+		Worker(),
 	}
 }

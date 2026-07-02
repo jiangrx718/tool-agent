@@ -1,0 +1,24 @@
+# web: HTTP 服务（默认 action）
+# worker: 定时任务（worker start 子命令）
+# 两者共用同一个镜像，只是启动命令不同
+services:
+  web:
+    build: .
+    image: tool-agent:latest
+    container_name: tool-agent-web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  worker:
+    build: .
+    image: tool-agent:latest
+    container_name: tool-agent-worker
+    command: ["worker", "start"]
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    restart: unless-stopped
