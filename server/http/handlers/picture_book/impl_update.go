@@ -12,7 +12,7 @@ type UpdateReq struct {
 	BookId     string `json:"book_id" binding:"required"`
 	Title      string `json:"title" binding:"required"`
 	Icon       string `json:"icon"`
-	CategoryId string `json:"category_id"`
+	CategoryId string `json:"category_id" binding:"required"`
 	Type       int    `json:"type"`
 	Status     string `json:"status"`
 	Position   int    `json:"position"`
@@ -24,7 +24,7 @@ func (h *PictureBookHandler) Update(ctx *gin.Context) {
 	var logger = utils.SugarContext(ctx)
 	if err := ctx.Bind(&reqBody); err != nil {
 		logger.Infow("Handler PictureBook Update ctx.Bind err", "error", err)
-		response.ParameterError(ctx)
+		response.ParameterError(ctx, err)
 		return
 	}
 

@@ -40,8 +40,12 @@ func SuccessfulWithPagination(ctx *gin.Context, data any, offset *int, limit *in
 }
 
 // ParameterError 参数错误
-func ParameterError(ctx *gin.Context) {
-	ctx.AbortWithStatusJSON(http.StatusOK, Response{Code: CodeParameterErr, Msg: "参数错误"})
+func ParameterError(ctx *gin.Context, err error) {
+	msg := "参数错误"
+	if err != nil {
+		msg = "参数错误: " + err.Error()
+	}
+	ctx.AbortWithStatusJSON(http.StatusOK, Response{Code: CodeParameterErr, Msg: msg})
 }
 
 // InternalError 内部错误

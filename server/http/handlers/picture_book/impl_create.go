@@ -23,7 +23,7 @@ func (h *PictureBookHandler) Create(ctx *gin.Context) {
 	var logger = utils.SugarContext(ctx)
 	if err := ctx.Bind(&reqBody); err != nil {
 		logger.Infow("Handler PictureBook Create ctx.Bind err", "error", err)
-		response.ParameterError(ctx)
+		response.ParameterError(ctx, err)
 		return
 	}
 

@@ -11,16 +11,22 @@ import (
 	"github.com/google/uuid"
 )
 
+type SPictureBookResp struct {
+	BookId     string `json:"book_id"`
+	Title      string `json:"title"`
+	Icon       string `json:"icon"`
+	CategoryId string `json:"category_id"`
+	Status     string `json:"status"`
+	Type       int    `json:"type"`
+	Position   int    `json:"position"`
+}
+
 // Create 创建绘本
 func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bookType int, status string, position int) (common.ServiceResult, error) {
 	var (
 		logger = utils.SugarContext(ctx)
 		result = common.NewServiceResult()
 	)
-
-	if status == "" {
-		status = "on"
-	}
 
 	bookData := model.SPictureBook{
 		BookId:     uuid.New().String(),
@@ -47,7 +53,15 @@ func (s *Service) Create(ctx context.Context, title, icon, categoryId string, bo
 		"position", bookData.Position,
 	)
 
-	result.Data = bookData
+	result.Data = SPictureBookResp{
+		BookId:     bookData.BookId,
+		Title:      bookData.Title,
+		Icon:       bookData.Icon,
+		CategoryId: bookData.CategoryId,
+		Status:     bookData.Status,
+		Type:       bookData.Type,
+		Position:   bookData.Position,
+	}
 	result.SetMessage("操作成功")
 	return result, nil
 }

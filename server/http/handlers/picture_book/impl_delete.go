@@ -18,7 +18,7 @@ func (h *PictureBookHandler) Delete(ctx *gin.Context) {
 	var logger = utils.SugarContext(ctx)
 	if err := ctx.Bind(&reqBody); err != nil {
 		logger.Infow("Handler PictureBook Delete ctx.Bind err", "error", err)
-		response.ParameterError(ctx)
+		response.ParameterError(ctx, err)
 		return
 	}
 
