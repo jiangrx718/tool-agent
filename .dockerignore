@@ -1,0 +1,21 @@
+# VCS
+.git
+.gitignore
+
+# IDE / 工具
+.idea
+.claude
+
+# 构建产物 / 临时文件
+tmp
+logs
+*.log
+
+# 容器/部署相关，不需要进镜像
+Dockerfile
+.dockerignore
+k8s
+Makefile
+
+# OS
+.DS_Store
