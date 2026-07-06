@@ -37,42 +37,49 @@ const (
 //
 // channel 在流结束、出错或 ctx 取消时会被关闭，调用方读取到 ok=false 即视为结束。
 func (s *DemoService) ChatStream(ctx context.Context, question string) (chan ChatStream, error) {
-	logger := utils.SugarContext(ctx)
+	// 所有工作都在 goroutine 内完成：创建模型、发起流式请求、逐块读取。
+	// channel 立即返回，调用方可以马上开始消费，实现真正的一块一块到达。
 	result := make(chan ChatStream, 1000)
 
-	if question == "" {
-		question = "你好，请介绍一下 Eino 框架"
-	}
-
-	// 1. 创建 ChatModel（DeepSeek）
-	chatModel, err := deepseek.NewChatModel(ctx, &deepseek.ChatModelConfig{
-		APIKey:  os.Getenv("DEEPSEEK_CHAT_MODEL_KEY"),
-		Model:   os.Getenv("DEEPSEEK_CHAT_MODEL_NAME"),
-		BaseURL: os.Getenv("DEEPSEEK_CHAT_MODEL_BASE_URL"),
-	})
-	if err != nil {
-		logger.Errorf("[demo] 创建 ChatModel 失败: %v", err)
-		return nil, err
-	}
-
-	// 2. 准备消息
-	messages := []*schema.Message{
-		schema.SystemMessage("你是一个友好的 AI 助手"),
-		schema.UserMessage(question),
-	}
-
-	// 3. 发起流式请求
-	reader, err := chatModel.Stream(ctx, messages)
-	if err != nil {
-		logger.Errorf("[demo] 启动流式生成失败: %v", err)
-		return nil, err
-	}
-
-	// 4. 异步消费 StreamReader，把每个 chunk 推入 channel
 	go func() {
-		defer reader.Close()
-		defer close(result)
+		logger := utils.SugarContext(ctx)
+		defer func() {
+			if err := recover(); err != nil {
+				logger.Errorf("[demo] ChatStream panic: %v", err)
+			}
+			close(result)
+		}()
 
+		if question == "" {
+			question = "你好，请介绍一下 Eino 框架"
+		}
+
+		// 1. 创建 ChatModel（DeepSeek）
+		chatModel, err := deepseek.NewChatModel(ctx, &deepseek.ChatModelConfig{
+			APIKey:  os.Getenv("DEEPSEEK_CHAT_MODEL_KEY"),
+			Model:   os.Getenv("DEEPSEEK_CHAT_MODEL_NAME"),
+			BaseURL: os.Getenv("DEEPSEEK_CHAT_MODEL_BASE_URL"),
+		})
+		if err != nil {
+			logger.Errorf("[demo] 创建 ChatModel 失败: %v", err)
+			return
+		}
+
+		// 2. 准备消息
+		messages := []*schema.Message{
+			schema.SystemMessage("你是一个友好的 AI 助手"),
+			schema.UserMessage(question),
+		}
+
+		// 3. 发起流式请求
+		reader, err := chatModel.Stream(ctx, messages)
+		if err != nil {
+			logger.Errorf("[demo] 启动流式生成失败: %v", err)
+			return
+		}
+		defer reader.Close()
+
+		// 4. 逐块消费 StreamReader，把每个 chunk 推入 channel
 		for {
 			// 客户端断开 / 上游取消时退出
 			if ctx.Err() != nil {

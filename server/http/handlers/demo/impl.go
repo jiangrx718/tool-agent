@@ -24,5 +24,5 @@ func (h *DemoHandler) RegisterRoutes(routerGroup *gin.RouterGroup) {
 	g := routerGroup.Group("/demo")
 
 	// 绘本相关接口
-	g.POST("/create", middleware.EventStreamHeadersMiddleware(), h.DemoCreate)
+	g.GET("/create", middleware.EventStreamHeadersMiddleware(), h.DemoCreate)
 }
