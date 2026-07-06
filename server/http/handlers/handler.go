@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"tool-agent/server/http/handlers/demo"
 	"tool-agent/server/http/handlers/kb"
 	"tool-agent/server/http/handlers/picture_book"
 	"tool-agent/utils"
@@ -29,5 +30,8 @@ func (h *Handler) RegisterRoutes() {
 
 	// 知识库智能体相关接口
 	kb.NewKBHandler(h.router).RegisterRoutes(g)
+
+	// 智能体Demo相关接口
+	demo.NewDemoHandler(h.router).RegisterRoutes(g)
 
 }
