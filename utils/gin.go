@@ -31,8 +31,6 @@ func NewHttpServer(listen string) *HttpServer {
 	}
 
 	r := gin.Default()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
 	r.Use(RequestID())
 
 	r.GET("/ping", func(c *gin.Context) {
