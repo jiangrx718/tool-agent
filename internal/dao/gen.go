@@ -17,17 +17,20 @@ import (
 
 var (
 	Q            = new(Query)
+	KbDocument   *kbDocument
 	SPictureBook *sPictureBook
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	KbDocument = &Q.KbDocument
 	SPictureBook = &Q.SPictureBook
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:           db,
+		KbDocument:   newKbDocument(db, opts...),
 		SPictureBook: newSPictureBook(db, opts...),
 	}
 }
@@ -35,6 +38,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	KbDocument   kbDocument
 	SPictureBook sPictureBook
 }
 
@@ -45,6 +49,7 @@ func (q *Query) UnderlyingDB() *gorm.DB { return q.db }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		KbDocument:   q.KbDocument.clone(db),
 		SPictureBook: q.SPictureBook.clone(db),
 	}
 }
@@ -60,16 +65,19 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		KbDocument:   q.KbDocument.replaceDB(db),
 		SPictureBook: q.SPictureBook.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
+	KbDocument   IKbDocumentDo
 	SPictureBook ISPictureBookDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		KbDocument:   q.KbDocument.WithContext(ctx),
 		SPictureBook: q.SPictureBook.WithContext(ctx),
 	}
 }

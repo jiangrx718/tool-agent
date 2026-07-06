@@ -8,6 +8,7 @@ import (
 	"gorm.io/gen"
 )
 
+// go  run main.go generate
 var generate = &cli.Command{
 	Name: "generate",
 	Action: func(ctx *cli.Context) error {
@@ -25,6 +26,7 @@ var generate = &cli.Command{
 
 		g.ApplyBasic(
 			model.SPictureBook{},
+			model.KbDocument{},
 		)
 
 		g.Execute()

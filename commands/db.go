@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// go  run main.go db migrate
 var dbCommand = &cli.Command{
 	Name:  "db",
 	Usage: "数据库操作",
@@ -22,6 +23,7 @@ var dbCommand = &cli.Command{
 
 				if err := db.AutoMigrate(
 					&model.SPictureBook{},
+					&model.KbDocument{},
 				); err != nil {
 					utils.Sugar().Errorf("AutoMigrate error %v", err)
 					return err

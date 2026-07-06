@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"tool-agent/server/http/handlers/kb"
 	"tool-agent/server/http/handlers/picture_book"
 	"tool-agent/utils"
 
@@ -25,4 +26,8 @@ func (h *Handler) RegisterRoutes() {
 
 	// 绘本相关接口
 	picture_book.NewPictureBookHandler(h.router).RegisterRoutes(g)
+
+	// 知识库智能体相关接口
+	kb.NewKBHandler(h.router).RegisterRoutes(g)
+
 }

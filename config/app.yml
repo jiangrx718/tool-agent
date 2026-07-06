@@ -12,7 +12,7 @@ log:
 # 数据库配置
 tools:
   dialect: mysql
-  dsn: root:123456@tcp(127.0.0.1:3307)/tool-agent?charset=utf8mb4&parseTime=True&loc=Local
+  dsn: root:123456@tcp(127.0.0.1:3306)/tool-agent?charset=utf8mb4&parseTime=True&loc=Local
 # 定时任务配置
 demo:
   cron: "*/1 * * * *"
