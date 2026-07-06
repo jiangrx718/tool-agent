@@ -1,10 +1,7 @@
 package demo
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-
+	"io"
 	"tool-agent/server/http/httputil"
 
 	"github.com/gin-gonic/gin"
@@ -20,30 +17,14 @@ func (h *DemoHandler) DemoCreate(ctx *gin.Context) {
 		httputil.ServerError(ctx, err)
 		return
 	}
-
-	flusher, ok := ctx.Writer.(http.Flusher)
-	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "streaming not supported"})
-		return
-	}
-
-	// 先写入响应头并 flush，让客户端立即收到 SSE 连接已建立
-	ctx.Writer.WriteHeader(http.StatusOK)
-	flusher.Flush()
-
-	for {
-		select {
-		case <-ctx.Request.Context().Done():
-			// 客户端断开连接
-			return
-		case msg, ok := <-ch:
-			if !ok {
-				// channel 关闭，流结束
-				return
-			}
-			data, _ := json.Marshal(msg)
-			fmt.Fprintf(ctx.Writer, "data: %s\n\n", data)
-			flusher.Flush()
+	
+	ctx.Stream(func(w io.Writer) bool {
+		if msg, ok := <-ch; ok {
+			ctx.SSEvent("message", msg)
+			return true
 		}
-	}
+		return false
+	})
+
+	return
 }
