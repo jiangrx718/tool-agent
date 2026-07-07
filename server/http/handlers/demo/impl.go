@@ -25,4 +25,6 @@ func (h *DemoHandler) RegisterRoutes(routerGroup *gin.RouterGroup) {
 
 	// 绘本相关接口
 	g.GET("/create", middleware.EventStreamHeadersMiddleware(), h.DemoCreate)
+	// 天气查询接口
+	g.POST("/weather", middleware.EventStreamHeadersMiddleware(), h.DemoWeather)
 }
