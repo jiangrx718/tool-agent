@@ -23,6 +23,9 @@ func NewHandler(router *gin.Engine) utils.HttpServerHandler {
 
 // RegisterRoutes 注册所有路由
 func (h *Handler) RegisterRoutes() {
+	// 天气查询 Web 界面
+	h.router.StaticFile("/weather", "web/weather/index.html")
+
 	g := h.router.Group("/api")
 
 	// 绘本相关接口

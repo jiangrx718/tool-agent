@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天气查询助手</title>
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --surface: #ffffff;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #dbeafe;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-icon svg {
+            width: 26px;
+            height: 26px;
+            fill: white;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.15s;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+        }
+
+        .input-field::placeholder {
+            color: #94a3b8;
+        }
+
+        .send-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .send-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .suggestions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .suggestion-chip {
+            padding: 6px 14px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-family: inherit;
+        }
+
+        .suggestion-chip:hover {
+            background: #bfdbfe;
+        }
+
+        .response-area {
+            padding: 20px;
+            min-height: 200px;
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        .placeholder-text {
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 50px 20px;
+            font-size: 14px;
+        }
+
+        .placeholder-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            opacity: 0.3;
+        }
+
+        .message-content {
+            font-size: 15px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background: var(--primary);
+            vertical-align: text-bottom;
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .error-message {
+            color: #dc2626;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .status-dot.loading {
+            background: #f59e0b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="header-title">天气查询助手</div>
+                <div class="header-subtitle">输入城市名称，获取实时天气信息</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="input-area">
+                <div class="input-row">
+                    <input
+                        type="text"
+                        id="question"
+                        class="input-field"
+                        placeholder="输入城市或天气问题，如：今天北京天气怎么样？"
+                        autocomplete="off"
+                    />
+                    <button id="sendBtn" class="send-btn" onclick="queryWeather()">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                        查询
+                    </button>
+                </div>
+                <div class="suggestions">
+                    <button class="suggestion-chip" onclick="quickQuery('今天北京天气怎么样？')">北京</button>
+                    <button class="suggestion-chip" onclick="quickQuery('上海现在多少度？')">上海</button>
+                    <button class="suggestion-chip" onclick="quickQuery('深圳天气情况')">深圳</button>
+                    <button class="suggestion-chip" onclick="quickQuery('杭州今天下雨吗？')">杭州</button>
+                </div>
+            </div>
+
+            <div class="response-area" id="responseArea">
+                <div class="placeholder-text">
+                    <svg class="placeholder-icon" viewBox="0 0 24 24" fill="#94a3b8">
+                        <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+                    </svg>
+                    <div>输入城市名称开始查询天气</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionInput = document.getElementById('question');
+        const sendBtn = document.getElementById('sendBtn');
+        const responseArea = document.getElementById('responseArea');
+        let isQuerying = false;
+
+        questionInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !isQuerying) {
+                queryWeather();
+            }
+        });
+
+        function quickQuery(question) {
+            if (isQuerying) return;
+            questionInput.value = question;
+            queryWeather();
+        }
+
+        async function queryWeather() {
+            const question = questionInput.value.trim();
+            if (!question || isQuerying) return;
+
+            isQuerying = true;
+            sendBtn.disabled = true;
+            questionInput.disabled = true;
+
+            // 初始化响应区域
+            responseArea.innerHTML =
+                '<div class="status-badge"><span class="status-dot loading"></span>查询中...</div>' +
+                '<div class="message-content"><span class="cursor"></span></div>';
+
+            const statusBadge = responseArea.querySelector('.status-badge');
+            const messageEl = responseArea.querySelector('.message-content');
+            const cursorEl = responseArea.querySelector('.cursor');
+            let fullText = '';
+
+            try {
+                const resp = await fetch('/api/demo/weather', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!resp.ok) {
+                    throw new Error('服务器返回错误: ' + resp.status);
+                }
+
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // 保留最后不完整的行
+
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed || !trimmed.startsWith('data:')) continue;
+
+                        const jsonStr = trimmed.slice(5).trim();
+                        if (!jsonStr) continue;
+
+                        try {
+                            const data = JSON.parse(jsonStr);
+                            if (data.code === 0) {
+                                if (data.message === 'chunk' && data.data && data.data.results) {
+                                    fullText += data.data.results;
+                                    messageEl.textContent = fullText;
+                                    responseArea.scrollTop = responseArea.scrollHeight;
+                                } else if (data.message === 'done') {
+                                    statusBadge.innerHTML =
+                                        '<span class="status-dot"></span>查询完成';
+                                }
+                            } else if (data.code === 500) {
+                                throw new Error(data.message || '查询失败');
+                            }
+                        } catch (e) {
+                            // 忽略解析异常，继续处理后续数据
+                        }
+                    }
+                }
+
+                // 移除光标
+                if (cursorEl && cursorEl.parentNode) {
+                    cursorEl.parentNode.removeChild(cursorEl);
+                }
+                if (statusBadge.querySelector('.status-dot').classList.contains('loading')) {
+                    statusBadge.innerHTML = '<span class="status-dot"></span>查询完成';
+                }
+            } catch (err) {
+                responseArea.innerHTML =
+                    '<div class="error-message">' + (err.message || '请求失败，请稍后重试') + '</div>';
+            } finally {
+                isQuerying = false;
+                sendBtn.disabled = false;
+                questionInput.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
