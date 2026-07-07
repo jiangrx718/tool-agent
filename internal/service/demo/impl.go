@@ -4,15 +4,11 @@ import (
 	"tool-agent/internal/dao"
 	"tool-agent/utils"
 
-	"github.com/cloudwego/eino/components/model"
-	"github.com/cloudwego/eino/components/tool"
 	"gorm.io/gorm"
 )
 
 type DemoService struct {
-	db           *gorm.DB
-	weatherModel model.ToolCallingChatModel
-	weatherTool  tool.InvokableTool
+	db *gorm.DB
 }
 
 func NewDemoService() *DemoService {
