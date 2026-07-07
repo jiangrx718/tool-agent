@@ -7,7 +7,7 @@ import (
 	"os"
 	"tool-agent/utils"
 
-	"github.com/cloudwego/eino-ext/components/model/deepseek"
+	"github.com/cloudwego/eino-ext/components/model/openai"
 	"github.com/cloudwego/eino/schema"
 )
 
@@ -55,13 +55,14 @@ func (s *DemoService) ChatStream(ctx context.Context, question string) (chan Cha
 		}
 
 		// 1. 创建 ChatModel（DeepSeek）
-		chatModel, err := deepseek.NewChatModel(ctx, &deepseek.ChatModelConfig{
-			APIKey:  os.Getenv("DEEPSEEK_CHAT_MODEL_KEY"),
-			Model:   os.Getenv("DEEPSEEK_CHAT_MODEL_NAME"),
-			BaseURL: os.Getenv("DEEPSEEK_CHAT_MODEL_BASE_URL"),
+		// 使用 openai 适配器，兼容所有 OpenAI 兼容接口（DeepSeek / GPT / GLM / Kimi / 千问 等）
+		chatModel, err := openai.NewChatModel(ctx, &openai.ChatModelConfig{
+			APIKey:  os.Getenv("CHAT_MODEL_KEY"),
+			Model:   os.Getenv("CHAT_MODEL_NAME"),
+			BaseURL: os.Getenv("CHAT_MODEL_BASE_URL"),
 		})
 		if err != nil {
-			logger.Errorf("[demo] 创建 ChatModel 失败: %v", err)
+			logger.Errorf("[demo] ChatStream 创建 ChatModel 失败: %v", err)
 			return
 		}
 

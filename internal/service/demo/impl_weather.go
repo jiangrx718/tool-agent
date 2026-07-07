@@ -15,7 +15,7 @@ import (
 
 	"tool-agent/utils"
 
-	"github.com/cloudwego/eino-ext/components/model/deepseek"
+	"github.com/cloudwego/eino-ext/components/model/openai"
 	"github.com/cloudwego/eino/components/model"
 	"github.com/cloudwego/eino/components/tool"
 	toolutils "github.com/cloudwego/eino/components/tool/utils"
@@ -199,13 +199,14 @@ func pumpStream(ctx context.Context, result chan ChatStream, reader *schema.Stre
 // 复用 demo 的 DeepSeek 环境变量配置。
 func getWeatherDeps(ctx context.Context) (model.ToolCallingChatModel, tool.InvokableTool, error) {
 	weatherDeps.once.Do(func() {
-		chatModel, err := deepseek.NewChatModel(ctx, &deepseek.ChatModelConfig{
-			APIKey:  os.Getenv("DEEPSEEK_CHAT_MODEL_KEY"),
-			Model:   os.Getenv("DEEPSEEK_CHAT_MODEL_NAME"),
-			BaseURL: os.Getenv("DEEPSEEK_CHAT_MODEL_BASE_URL"),
+		// 使用 openai 适配器，兼容所有 OpenAI 兼容接口（DeepSeek / GPT / GLM / Kimi / 千问 等）
+		chatModel, err := openai.NewChatModel(ctx, &openai.ChatModelConfig{
+			APIKey:  os.Getenv("CHAT_MODEL_KEY"),
+			Model:   os.Getenv("CHAT_MODEL_NAME"),
+			BaseURL: os.Getenv("CHAT_MODEL_BASE_URL"),
 		})
 		if err != nil {
-			weatherDeps.err = fmt.Errorf("创建天气 ChatModel 失败: %w", err)
+			weatherDeps.err = fmt.Errorf("WeatherStream 创建 ChatModel 失败: %w", err)
 			return
 		}
 
