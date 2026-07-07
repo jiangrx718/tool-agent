@@ -86,11 +86,19 @@ func (s *DemoService) WeatherStream(ctx context.Context, question string) (chan 
 			toolInfo, err := weatherTool.Info(ctx)
 			if err != nil {
 				logger.Errorf("[demo] 获取天气工具信息失败: %v", err)
+				select {
+				case <-ctx.Done():
+				case result <- ChatStream{Code: chatStreamCodeError, Message: "error: 获取天气工具信息失败: " + err.Error()}:
+				}
 				return
 			}
 			boundModel, err := chatModel.WithTools([]*schema.ToolInfo{toolInfo})
 			if err != nil {
 				logger.Errorf("[demo] 绑定天气工具失败: %v", err)
+				select {
+				case <-ctx.Done():
+				case result <- ChatStream{Code: chatStreamCodeError, Message: "error: 绑定天气工具失败: " + err.Error()}:
+				}
 				return
 			}
 
@@ -98,6 +106,10 @@ func (s *DemoService) WeatherStream(ctx context.Context, question string) (chan 
 			reader, err := boundModel.Stream(ctx, messages)
 			if err != nil {
 				logger.Errorf("[demo] 启动天气模型流式生成失败: %v", err)
+				select {
+				case <-ctx.Done():
+				case result <- ChatStream{Code: chatStreamCodeError, Message: "error: 启动天气模型流式生成失败: " + err.Error()}:
+				}
 				return
 			}
 
@@ -112,6 +124,10 @@ func (s *DemoService) WeatherStream(ctx context.Context, question string) (chan 
 				return
 			}
 			if fullMsg == nil {
+				select {
+				case <-ctx.Done():
+				case result <- ChatStream{Code: chatStreamCodeError, Message: "error: 模型返回空响应"}:
+				}
 				return
 			}
 
